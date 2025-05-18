@@ -4,14 +4,14 @@
 import Foundation
 
 // MARK: - Header Generator
-func makeHeader(fileName: String, moduleName: String, author: String, date: String, company: String = "GenIT", year: String = "2025") -> String {
+func makeHeader(fileName: String, moduleName: String, author: String, date: String, company: String, year: String = "2025") -> String {
     return """
 //
 // \(fileName).swift
-// \(moduleName)
+// \(company)
 //
 // Created by \(author) on \(date).
-// Copyright © \(year) \(company). All rights reserved.
+// Copyright © \(year) GenIT. All rights reserved.
 //
 
 """
@@ -48,8 +48,13 @@ func renderTemplate(named template: Template, replacements: [String: String]) ->
 let args = CommandLine.arguments
 
 guard args.count >= 3 else {
-    print("❌ Uso: swift run <tool> <Modulo> <NombrePantalla> [--viewmodel]")
+    print("❌ Uso: swift run <tool> <Modulo> <NombrePantalla> [--viewmodel] [--company <Empresa>]")
     exit(1)
+}
+
+var company = "AL2Wallet"
+if let companyFlagIndex = args.firstIndex(of: "--company"), companyFlagIndex + 1 < args.count {
+    company = args[companyFlagIndex + 1]
 }
 
 let moduleName = args[1]
@@ -66,11 +71,11 @@ createFolderIfNeeded(at: viewFolder)
 if includeViewModel { createFolderIfNeeded(at: viewModelFolder) }
 
 // MARK: Templates
-func generateViewController(screenName: String, moduleName: String, folderPath: String) {
+func generateViewController(screenName: String, moduleName: String, folderPath: String, company: String) {
     let fileName = "\(screenName)ViewController"
     let author = NSFullUserName()
     let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
-    let header = makeHeader(fileName: fileName, moduleName: moduleName, author: author, date: date)
+    let header = makeHeader(fileName: fileName, moduleName: moduleName, author: author, date: date, company: company)
     let body = renderTemplate(named: .viewController, replacements: [
         "ModuleName": moduleName,
         "ScreenName": screenName,
@@ -81,11 +86,11 @@ func generateViewController(screenName: String, moduleName: String, folderPath: 
     writeFile(at: path, content: content)
 }
 
-func generateViewModel(screenName: String, moduleName: String, folderPath: String) {
+func generateViewModel(screenName: String, moduleName: String, folderPath: String, company: String) {
     let fileName = "\(screenName)ViewModel"
     let author = NSFullUserName()
     let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
-    let header = makeHeader(fileName: fileName, moduleName: moduleName, author: author, date: date)
+    let header = makeHeader(fileName: fileName, moduleName: moduleName, author: author, date: date, company: company)
     let body = renderTemplate(named: .viewModel, replacements: [
         "ModuleName": moduleName,
         "ScreenName": screenName,
@@ -96,10 +101,10 @@ func generateViewModel(screenName: String, moduleName: String, folderPath: Strin
     writeFile(at: path, content: content)
 }
 
-generateViewController(screenName: screenName, moduleName: moduleName, folderPath: viewFolder)
+generateViewController(screenName: screenName, moduleName: moduleName, folderPath: viewFolder, company: company)
 
 if includeViewModel {
-    generateViewModel(screenName: screenName, moduleName: moduleName, folderPath: viewModelFolder)
+    generateViewModel(screenName: screenName, moduleName: moduleName, folderPath: viewModelFolder, company: company)
 }
 
 print("✅ Se generó el módulo \(moduleName)/ con la pantalla \(screenName).")
