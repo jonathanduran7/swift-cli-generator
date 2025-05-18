@@ -3,6 +3,20 @@
 
 import Foundation
 
+// MARK: - Header Generator
+func makeHeader(fileName: String, moduleName: String, author: String, date: String, company: String = "GenIT", year: String = "2025") -> String {
+    return """
+//
+// \(fileName).swift
+// \(moduleName)
+//
+// Created by \(author) on \(date).
+// Copyright © \(year) \(company). All rights reserved.
+//
+
+"""
+}
+
 // MARK: - Helper
 func createFolderIfNeeded(at path: String) {
     if !FileManager.default.fileExists(atPath: path) {
@@ -53,22 +67,32 @@ if includeViewModel { createFolderIfNeeded(at: viewModelFolder) }
 
 // MARK: Templates
 func generateViewController(screenName: String, moduleName: String, folderPath: String) {
-    let content = renderTemplate(named: .viewController, replacements: [
+    let fileName = "\(screenName)ViewController"
+    let author = NSFullUserName()
+    let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
+    let header = makeHeader(fileName: fileName, moduleName: moduleName, author: author, date: date)
+    let body = renderTemplate(named: .viewController, replacements: [
         "ModuleName": moduleName,
         "ScreenName": screenName,
-        "FileName": "\(screenName)ViewController"
+        "FileName": fileName
     ])
-    let path = "\(folderPath)/\(screenName)ViewController.swift"
+    let content = header + body
+    let path = "\(folderPath)/\(fileName).swift"
     writeFile(at: path, content: content)
 }
 
 func generateViewModel(screenName: String, moduleName: String, folderPath: String) {
-    let content = renderTemplate(named: .viewModel, replacements: [
+    let fileName = "\(screenName)ViewModel"
+    let author = NSFullUserName()
+    let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
+    let header = makeHeader(fileName: fileName, moduleName: moduleName, author: author, date: date)
+    let body = renderTemplate(named: .viewModel, replacements: [
         "ModuleName": moduleName,
         "ScreenName": screenName,
-        "FileName": "\(screenName)ViewModel"
+        "FileName": fileName
     ])
-    let path = "\(folderPath)/\(screenName)ViewModel.swift"
+    let content = header + body
+    let path = "\(folderPath)/\(fileName).swift"
     writeFile(at: path, content: content)
 }
 
