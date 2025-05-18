@@ -24,13 +24,16 @@ swift run SwiftCLIGenerator Example FirstScreen --viewmodel --company "R/GA"
 ```
 
 Se genera:
+```
 Example/
 ├── View/
 │   └── FirstScreenViewController.swift
 └── ViewModel/
     └── FirstScreenViewModel.swift
+```
 
 El encabezado:
+```
 //
 //  FirstScreenViewController.swift
 //  Example
@@ -38,6 +41,7 @@ El encabezado:
 //  Created by Joni on 18/05/2025.
 //  Copyright © 2025 R/GA. All rights reserved.
 //
+```
 
 ---
 
