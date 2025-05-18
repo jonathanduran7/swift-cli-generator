@@ -14,6 +14,22 @@ func writeFile(at path: String, content: String) {
     FileManager.default.createFile(atPath: path, contents: content.data(using: .utf8))
 }
 
+enum Template: String {
+    case viewController = "ViewController.template.swift"
+    case viewModel = "ViewModel.template.swift"
+}
+
+func renderTemplate(named template: Template, replacements: [String: String]) -> String {
+    let path = FileManager.default.currentDirectoryPath + "/Templates/\(template.rawValue)"
+    guard let raw = try? String(contentsOfFile: path) else {
+        return "// Error: no se pudo cargar el template \(template.rawValue)"
+    }
+    
+    return replacements.reduce(raw) { result, pair in
+        result.replacingOccurrences(of: "{{\(pair.key)}}", with: pair.value)
+    }
+}
+
 // MARK: - Entrada CLI
 let args = CommandLine.arguments
 
@@ -36,25 +52,17 @@ createFolderIfNeeded(at: viewFolder)
 if includeViewModel { createFolderIfNeeded(at: viewModelFolder) }
 
 // MARK: Templates
-let viewControllerContent = """
-import UIKit
+let viewControllerContent = renderTemplate(named: .viewController, replacements: [
+    "ModuleName": moduleName,
+    "ScreenName": screenName,
+    "FileName": "\(screenName)ViewController"
+])
 
-class \(screenName)ViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        title = "\(screenName)"
-    }
-}
-"""
-
-let viewModelContent = """
-import Foundation
-
-class \(screenName)ViewModel {
-    // TODO: Lógica de view model
-}
-"""
+let viewModelContent = renderTemplate(named: .viewModel, replacements: [
+    "ModuleName": moduleName,
+    "ScreenName": screenName,
+    "FileName": "\(screenName)ViewModel"
+])
 
 // MARK: - Crear archivos
 let vcPath = "\(viewFolder)/\(screenName)ViewController.swift"
@@ -67,5 +75,5 @@ if includeViewModel {
 
 print("✅ Se generó el módulo \(moduleName)/ con la pantalla \(screenName).")
 if includeViewModel {
-    print("🧠 Se incluyó ViewModel también.")
+    print("Se incluyó ViewModel también.")
 }
