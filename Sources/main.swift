@@ -52,25 +52,30 @@ createFolderIfNeeded(at: viewFolder)
 if includeViewModel { createFolderIfNeeded(at: viewModelFolder) }
 
 // MARK: Templates
-let viewControllerContent = renderTemplate(named: .viewController, replacements: [
-    "ModuleName": moduleName,
-    "ScreenName": screenName,
-    "FileName": "\(screenName)ViewController"
-])
+func generateViewController(screenName: String, moduleName: String, folderPath: String) {
+    let content = renderTemplate(named: .viewController, replacements: [
+        "ModuleName": moduleName,
+        "ScreenName": screenName,
+        "FileName": "\(screenName)ViewController"
+    ])
+    let path = "\(folderPath)/\(screenName)ViewController.swift"
+    writeFile(at: path, content: content)
+}
 
-let viewModelContent = renderTemplate(named: .viewModel, replacements: [
-    "ModuleName": moduleName,
-    "ScreenName": screenName,
-    "FileName": "\(screenName)ViewModel"
-])
+func generateViewModel(screenName: String, moduleName: String, folderPath: String) {
+    let content = renderTemplate(named: .viewModel, replacements: [
+        "ModuleName": moduleName,
+        "ScreenName": screenName,
+        "FileName": "\(screenName)ViewModel"
+    ])
+    let path = "\(folderPath)/\(screenName)ViewModel.swift"
+    writeFile(at: path, content: content)
+}
 
-// MARK: - Crear archivos
-let vcPath = "\(viewFolder)/\(screenName)ViewController.swift"
-writeFile(at: vcPath, content: viewControllerContent)
+generateViewController(screenName: screenName, moduleName: moduleName, folderPath: viewFolder)
 
 if includeViewModel {
-    let vmPath = "\(viewModelFolder)/\(screenName)ViewModel.swift"
-    writeFile(at: vmPath, content: viewModelContent)
+    generateViewModel(screenName: screenName, moduleName: moduleName, folderPath: viewModelFolder)
 }
 
 print("✅ Se generó el módulo \(moduleName)/ con la pantalla \(screenName).")
