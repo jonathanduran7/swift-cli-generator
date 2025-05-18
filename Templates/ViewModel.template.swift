@@ -1,5 +1,6 @@
-import Foundation
+import RxCocoa
+import RxSwift
 
-class {{ScreenName}}ViewModel {
-    // TODO: Lógica de view model
+final class {{ScreenName}}ViewModel: ViewModelType {
+    
 }
